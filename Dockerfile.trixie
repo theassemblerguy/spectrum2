@@ -51,16 +51,6 @@ RUN echo "---> Install Teams" && \
 		make && \
 		make DESTDIR=/tmp/out install
 
-RUN echo "---> purple-gowhatsapp" && \
-		apt-get install -y golang-go && \
-		git clone --recurse-submodules https://github.com/hoehermann/purple-gowhatsapp.git purple-whatsmeow && \
-		cd purple-whatsmeow && \
-		git checkout v1.20.0 && \
-		cd .. && \
-		cmake -S purple-whatsmeow -B build && \
-		cmake --build build && \
-		cmake --install build --strip --prefix /tmp/out
-
 RUN echo "---> purple-battlenet" && \
 		git clone --recursive https://github.com/EionRobb/purple-battlenet && \
 		cd purple-battlenet && \
@@ -85,6 +75,14 @@ FROM debian:unstable-20250811 as production
 RUN echo "deb [check-valid-until=no] http://snapshot.debian.org/archive/debian/20250811T000000Z/ unstable main" > /etc/apt/sources.list
 RUN echo "deb-src [check-valid-until=no] http://snapshot.debian.org/archive/debian/20250811T000000Z/ unstable main" >> /etc/apt/sources.list
 RUN echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99snapshot
+
+# purple-gowhatsapp / purple-whatsmeow: use the prebuilt nightly .deb instead of
+# compiling from source. Avoids needing a Go toolchain new enough for the current
+# whatsmeow dependency inside the Debian snapshot.
+# Bump these two ARGs to pick up a newer nightly build later:
+ARG GOWHATSAPP_RELEASE=nightly-20260829
+ARG GOWHATSAPP_DEB=purple-whatsmeow_1.22.0_amd64.deb
+
 EXPOSE 8080
 VOLUME ["/etc/spectrum2/transports", "/var/lib/spectrum2"]
 
@@ -99,6 +97,11 @@ RUN echo "---> Installing libpurple plugins" && \
 		purple-discord \
 		libmarkdown2 \
 		libogg0 libopusfile0 \
+		&& echo "---> Installing purple-whatsmeow (gowhatsapp, nightly build)" && \
+		curl -fL -o /tmp/purple-whatsmeow.deb \
+			"https://github.com/hoehermann/purple-gowhatsapp/releases/download/${GOWHATSAPP_RELEASE}/${GOWHATSAPP_DEB}" && \
+		apt-get install --no-install-recommends -y /tmp/purple-whatsmeow.deb && \
+		rm -f /tmp/purple-whatsmeow.deb \
 		&& rm -rf /var/lib/apt/lists/*
 COPY --from=staging /tmp/out/* /usr/
 COPY --from=staging spectrum2/packaging/docker/run.sh /run.sh
