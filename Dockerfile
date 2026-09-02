@@ -76,12 +76,6 @@ RUN apt-get install --no-install-recommends -y libjson-glib-dev \
 		libwebp-dev libgcrypt20-dev libpng-dev libglib2.0-dev \
 		libprotobuf-c-dev protobuf-c-compiler libmarkdown2-dev libopusfile-dev
 
-RUN echo "---> Installing purple-instagram" && \
-		git clone https://github.com/EionRobb/purple-instagram.git && \
-		cd purple-instagram && \
-		make && \
-		make DESTDIR=/tmp/out install
-
 RUN echo "---> Installing icyque" && \
 		git clone https://github.com/EionRobb/icyque.git && \
 		cd icyque && \
@@ -122,6 +116,7 @@ RUN echo "---> purple-mattermost" && \
 RUN echo "---> purple-discord" && \
 	git clone --recursive https://github.com/EionRobb/purple-discord && \
 		cd purple-discord && \
+		git checkout 64faf80 && \
 		make && \
 		make DESTDIR=/tmp/out install
 
