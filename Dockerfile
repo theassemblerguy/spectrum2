@@ -79,37 +79,42 @@ RUN apt-get install --no-install-recommends -y libjson-glib-dev \
 RUN echo "---> Installing icyque" && \
 		git clone https://github.com/EionRobb/icyque.git && \
 		cd icyque && \
+		git checkout 4d52dbe && \
 		make && \
 		make DESTDIR=/tmp/out install
 
 RUN echo "---> Install Steam" && \
 		git clone https://github.com/EionRobb/pidgin-opensteamworks.git && \
 		cd pidgin-opensteamworks/steam-mobile && \
+		git checkout 4274774 && \
 		make && \
 		make DESTDIR=/tmp/out install
 
 RUN echo "---> Install Teams" && \
 		git clone https://github.com/EionRobb/purple-teams.git && \
 		cd purple-teams && \
-		git checkout c0b5d9947e359c6cc8d54ee76af8dba116e0ec72 && \
+		git checkout 62f6fff && \
 		make && \
 		make DESTDIR=/tmp/out install
 
 RUN echo "---> purple-battlenet" && \
 	git clone --recursive https://github.com/EionRobb/purple-battlenet && \
 		cd purple-battlenet && \
+		git checkout d2113e2 && \
 		make && \
 		make DESTDIR=/tmp/out install
 
 RUN echo "---> purple-hangouts" && \
 	git clone --recursive https://github.com/EionRobb/purple-hangouts && \
 		cd purple-hangouts && \
+		git checkout 55b9f01 && \
 		make && \
 		make DESTDIR=/tmp/out install
 
 RUN echo "---> purple-mattermost" && \
 	git clone --recursive https://github.com/EionRobb/purple-mattermost && \
 		cd purple-mattermost && \
+		git checkout 56a7484 && \
 		make && \
 		make DESTDIR=/tmp/out install
 
